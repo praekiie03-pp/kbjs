@@ -17,7 +17,24 @@ export default function WerewolfGame() {
   const [totalPlayers, setTotalPlayers] = useState(0);
 
   useEffect(() => {
-    const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:4000';
+    // Try to determine server URL with multiple fallbacks
+    let serverUrl = process.env.NEXT_PUBLIC_SERVER_URL;
+    
+    if (!serverUrl) {
+      // For production on Vercel, try to connect to same domain
+      if (typeof window !== 'undefined') {
+        const isProduction = window.location.hostname !== 'localhost';
+        if (isProduction) {
+          // Try to use the same domain with /api/socket path
+          serverUrl = `${window.location.protocol}//${window.location.hostname}:4000`;
+        } else {
+          serverUrl = 'http://localhost:4000';
+        }
+      } else {
+        serverUrl = 'http://localhost:4000';
+      }
+    }
+    
     console.log('Connecting to:', serverUrl);
     
     socket = io(serverUrl, {
