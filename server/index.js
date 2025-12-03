@@ -127,6 +127,7 @@ io.on('connection', (socket) => {
     const game = new Game(gameId, data.maxPlayers || 12);
     games.set(gameId, game);
     
+    console.log('Game created:', gameId, 'Total games:', games.size);
     socket.emit('gameCreated', { gameId });
   });
 
@@ -134,7 +135,10 @@ io.on('connection', (socket) => {
     const { gameId, playerName } = data;
     const game = games.get(gameId);
 
+    console.log('Join game attempt:', gameId, 'Games available:', Array.from(games.keys()));
+
     if (!game) {
+      console.log('Game not found:', gameId);
       socket.emit('error', { message: 'Game not found' });
       return;
     }
@@ -145,6 +149,7 @@ io.on('connection', (socket) => {
     if (success) {
       players.set(playerId, { gameId, playerName });
       socket.join(gameId);
+      console.log('Player joined:', playerName, 'Game:', gameId, 'Total players:', game.players.length);
       io.to(gameId).emit('playerJoined', {
         playerId,
         playerName,
