@@ -17,7 +17,8 @@ export default function WerewolfGame() {
   const [totalPlayers, setTotalPlayers] = useState(0);
 
   useEffect(() => {
-    socket = io('http://localhost:4000');
+    const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:4000';
+    socket = io(serverUrl);
 
     socket.on('gameCreated', (data) => {
       setGameId(data.gameId);
