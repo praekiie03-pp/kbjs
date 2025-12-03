@@ -18,7 +18,13 @@ export default function WerewolfGame() {
 
   useEffect(() => {
     const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:4000';
-    socket = io(serverUrl);
+    console.log('Connecting to:', serverUrl);
+    
+    socket = io(serverUrl, {
+      reconnection: true,
+      reconnectionDelay: 1000,
+      reconnectionAttempts: 5,
+    });
 
     socket.on('gameCreated', (data) => {
       setGameId(data.gameId);
